@@ -1,7 +1,5 @@
 import 'dotenv/config'
 
-const port = process.env.PORT || 3000;
-
 import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
@@ -10,6 +8,7 @@ import cors from 'cors';
 
 import documents from "./docs.mjs";
 
+const port = process.env.PORT || 3000;
 const app = express();
 
 app.disable('x-powered-by');
@@ -45,5 +44,5 @@ app.get('/', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`)
 });
