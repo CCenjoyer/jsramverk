@@ -2,8 +2,9 @@
 
 Starter project for DV1677 JSRamverk
 
-## From root dir:
+## Setup:
 ```
+#from root
 npm install dotenv
 bash db/reset_db.bash
 ```
