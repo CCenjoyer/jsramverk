@@ -32,12 +32,25 @@ app.post("/", async (req, res) => {
     return res.redirect(`/${result.lastID}`);
 });
 
+<<<<<<< HEAD
 app.get('/', async (req, res) => {
     return res.render("index", { docs: await documents.getAll() });
 });
 
 
 app.get('/update/:id', async (req, res) => {
+=======
+app.get("/create", async (req, res) => {
+    return res.render("create");
+});
+
+app.post("/create", async (req, res) => {
+    await documents.addOne(req.body);
+    return res.redirect("/");
+});
+
+app.get('/:id', async (req, res) => {
+>>>>>>> 1b569cac8b7a2b2ee6a08a0bf2431967a20f9b08
     return res.render(
         "doc",
         { doc: await documents.getOne(req.params.id) }
