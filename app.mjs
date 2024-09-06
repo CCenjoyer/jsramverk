@@ -37,7 +37,6 @@ app.get('/', async (req, res) => {
 });
 
 
-app.get('/update/:id', async (req, res) => {
 app.get("/create", async (req, res) => {
     return res.render("create");
 });
@@ -47,7 +46,7 @@ app.post("/create", async (req, res) => {
     return res.redirect("/");
 });
 
-app.get('/:id', async (req, res) => {
+app.get('/update/:id', async (req, res) => {
     return res.render(
         "doc",
         { doc: await documents.getOne(req.params.id) }
