@@ -32,16 +32,27 @@ app.post("/", async (req, res) => {
     return res.redirect(`/${result.lastID}`);
 });
 
-app.get('/:id', async (req, res) => {
+app.get('/', async (req, res) => {
+    return res.render("index", { docs: await documents.getAll() });
+});
+
+
+app.get('/update/:id', async (req, res) => {
     return res.render(
         "doc",
         { doc: await documents.getOne(req.params.id) }
     );
 });
 
-app.get('/', async (req, res) => {
-    return res.render("index", { docs: await documents.getAll() });
+app.post('/update', async (req, res) => {
+    const id = req.query.rowid; // capture the 'id' from the query string
+    await documents.rowUpdate(req.body, id); // pass the 'id' to rowUpdate
+    return res.redirect(`/`);
 });
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
