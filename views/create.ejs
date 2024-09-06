@@ -1,0 +1,12 @@
+<%- include('includes/header'); %>
+    <h2>Create Document</h2>
+    <form method="POST" action="/create" class="new-doc">
+        <label for="title">Title:</label>
+        <input type="text" name="title"/>
+
+        <label for="content">Content</label>
+        <textarea name="content"></textarea>
+
+        <input type="submit" value="Create" />
+    </form>
+<%- include('includes/footer'); %>

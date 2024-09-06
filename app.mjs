@@ -32,6 +32,15 @@ app.post("/", async (req, res) => {
     return res.redirect(`/${result.lastID}`);
 });
 
+app.get("/create", async (req, res) => {
+    return res.render("create");
+});
+
+app.post("/create", async (req, res) => {
+    await documents.addOne(req.body);
+    return res.redirect("/");
+});
+
 app.get('/:id', async (req, res) => {
     return res.render(
         "doc",
