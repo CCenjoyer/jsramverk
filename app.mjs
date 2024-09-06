@@ -26,6 +26,10 @@ if (process.env.NODE_ENV !== 'test') {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+/**
+ * Route index 
+ * List of all db rows with a link attached to /update/:rowid 
+ */
 app.post("/", async (req, res) => {
     const result = await documents.addOne(req.body);
 
@@ -36,7 +40,10 @@ app.get('/', async (req, res) => {
     return res.render("index", { docs: await documents.getAll() });
 });
 
-
+/**
+ * Route Create
+ * Create new rows of data
+ */
 app.get("/create", async (req, res) => {
     return res.render("create");
 });
@@ -46,6 +53,10 @@ app.post("/create", async (req, res) => {
     return res.redirect("/");
 });
 
+/** 
+ * Route Update
+ * Update row data on row :id
+*/
 app.get('/update/:id', async (req, res) => {
     return res.render(
         "doc",
@@ -60,9 +71,9 @@ app.post('/update', async (req, res) => {
 });
 
 
-
-
-
+/**
+ * Reminder of what port the app is listening on
+ */
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`React app listening on port ${port}`)
 });
