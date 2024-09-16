@@ -1,6 +1,3 @@
-import openDb from './db/database.mjs';
-const database = import("./db/database.js");
-
 import {
     MongoClient,
     ObjectId
