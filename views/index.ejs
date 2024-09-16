@@ -1,6 +1,17 @@
-<%- include('includes/header'); %>
-    <h2>Dokument</h2>
-    <% docs.forEach(function(doc){ %>
-        <h3><a href="/update/<%= doc.id %>"><%= doc.title %></a></h3>
+<%- include('includes/header') %> <!-- Include the header -->
+
+<main>
+  <h2>List of Documents</h2>
+
+  <!-- Loop through the documents and display them -->
+  <ul>
+    <% docs.forEach(function(doc) { %>
+      <li>
+        <h3> <a href="/update/<%= doc._id %>">Document Title: <%= doc.title %></a></h3>
+      </li>
     <% }); %>
-<%- include('includes/footer'); %>
+  </ul>
+
+</main>
+
+<%- include('includes/footer') %> <!-- Include the footer -->

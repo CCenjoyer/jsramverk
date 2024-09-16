@@ -7,7 +7,10 @@ import morgan from 'morgan';
 import cors from 'cors';
 
 import documents from "./docs.mjs";
-import { console } from 'inspector';
+import {
+    console
+} from 'inspector';
+
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -25,8 +28,15 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
+// Middleware to parse JSON and form data (from POST requests)
+app.use(express.json());
+app.use(express.urlencoded({
+    extended: true
+}));
 /**
  * Route index 
  * List of all db rows with a link attached to /update/:rowid 
@@ -38,7 +48,9 @@ app.post("/", async (req, res) => {
 });
 
 app.get('/', async (req, res) => {
-    return res.render("index", { docs: await documents.getAll() });
+    return res.render("index", {
+        docs: await documents.getAll()
+    });
 });
 
 /**
@@ -57,48 +69,20 @@ app.post("/create", async (req, res) => {
 /** 
  * Route Update
  * Update row data on row :id
-*/
+ */
 app.get('/update/:id', async (req, res) => {
     return res.render(
-        "doc",
-        { doc: await documents.getOne(req.params.id) }
+        "doc", {
+            doc: await documents.getOne(req.params.id)
+        }
     );
 });
 
 app.post('/update', async (req, res) => {
-    const id = req.query.rowid; // capture the 'id' from the query string
-    await documents.rowUpdate(req.body, id); // pass the 'id' to rowUpdate
+    const id = req.query._id;
+    await documents.rowUpdate(req.body, id);
     return res.redirect(`/`);
 });
-
-app.get('/test', async (req, res) => {
-    console.log(await documents.GetAllDB());
-    return res.render("test", { docs: await documents.GetAllDB() });
-});
-
-app.get('/testupdate/:id', async (req, res) => {
-    return res.render(
-        "testdoc",
-        { testdoc: await documents.getOneDB(req.params.id) }
-    );
-});
-
-app.post('/testupdate', async (req, res) => {
-    const id = req.query._id; // capture the 'id' from the query string
-    await documents.rowUpdateDB(req.body, id); // pass the 'id' to rowUpdate
-    return res.redirect(`/test`);
-});
-
-
-app.get("/testcreate", async (req, res) => {
-    return res.render("create");
-});
-
-app.post("/testcreate", async (req, res) => {
-    await documents.addOneDB(req.body);
-    return res.redirect("/test");
-});
-
 
 /**
  * Reminder of what port the app is listening on
