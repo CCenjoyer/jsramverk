@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 
 import documents from "./docs.mjs";
+import { console } from 'inspector';
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -68,6 +69,34 @@ app.post('/update', async (req, res) => {
     const id = req.query.rowid; // capture the 'id' from the query string
     await documents.rowUpdate(req.body, id); // pass the 'id' to rowUpdate
     return res.redirect(`/`);
+});
+
+app.get('/test', async (req, res) => {
+    console.log(await documents.GetAllDB());
+    return res.render("test", { docs: await documents.GetAllDB() });
+});
+
+app.get('/testupdate/:id', async (req, res) => {
+    return res.render(
+        "testdoc",
+        { testdoc: await documents.getOneDB(req.params.id) }
+    );
+});
+
+app.post('/testupdate', async (req, res) => {
+    const id = req.query._id; // capture the 'id' from the query string
+    await documents.rowUpdateDB(req.body, id); // pass the 'id' to rowUpdate
+    return res.redirect(`/test`);
+});
+
+
+app.get("/testcreate", async (req, res) => {
+    return res.render("create");
+});
+
+app.post("/testcreate", async (req, res) => {
+    await documents.addOneDB(req.body);
+    return res.redirect("/test");
 });
 
 

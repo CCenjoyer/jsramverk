@@ -1,4 +1,14 @@
 import openDb from './db/database.mjs';
+const database = import("./db/database.js");
+
+import {
+    MongoClient,
+    ObjectId
+} from 'mongodb';
+
+
+const uri = "mongodb://localhost:27017";
+const client = new MongoClient(uri);
 
 const docs = {
     /**
@@ -61,7 +71,7 @@ const docs = {
      * @param {title: text, content: textarea} body 
      * @param {int} id 
      */
-    rowUpdate: async function rowUpdate(body, id){
+    rowUpdate: async function rowUpdate(body, id) {
         let db = await openDb();
 
         try {
@@ -79,6 +89,81 @@ const docs = {
             await db.close();
         }
     },
+
+    GetAllDB: async function GetAllDB() {
+        try {
+            // Connect to the MongoDB cluster
+            await client.connect();
+
+            // Choose the database and collection
+            const database = client.db('documents');
+            const collection = database.collection('documents');
+
+            // Find all documents in the collection
+            return await collection.find({}).toArray();
+
+        } catch (e) {
+            console.error(e);
+        } finally {
+            // Ensure that the client will close when you finish
+            await client.close();
+        }
+
+    },
+    getOneDB: async function getOneDB(id) {
+        try {
+            // Connect to the MongoDB cluster
+            await client.connect();
+    
+            // Choose the database and collection
+            const database = client.db('documents'); 
+            const collection = database.collection('documents');
+    
+            // Convert the string `id` to an ObjectId
+            const query = { _id: new ObjectId(id) };
+    
+            // Find the single document by _id
+            const document = await collection.findOne(query);
+                
+            return document; // Return the single document
+    
+        } catch (e) {
+            console.error(e);
+        } finally {
+            // Ensure that the client will close when you finish
+            await client.close();
+        }
+    },
+    rowUpdateDB: async function rowUpdateDB(id) {
+        try {
+            await client.connect();
+            const database = client.db('documents'); 
+            const collection = database.collection('documents');
+    
+            // Convert `id` to ObjectId
+            const filter = { _id: id };
+    
+            // Define the update operation
+            const updateDoc = {
+                $set: {
+                    title: body.title,
+                    content: body.content,
+                }
+            };
+    
+            // Update the document
+            const result = await collection.updateOne(filter, updateDoc);
+    
+            console.log(`${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s).`);
+    
+            return result;
+        } catch (e) {
+            console.error(e);
+        } finally {
+            await client.close();
+        }
+    },
+
 };
 
 export default docs;
