@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
 // Return a JSON object with list of all documents within the collection.
 app.get("/list", async (request, response) => {
     try {
-        let res = await findInCollection(dsn, "crowd", {}, {}, 0);
+        let res = await findInCollection(dsn, "documents", {}, {}, 0);
 
         console.log(res);
         response.json(res);
