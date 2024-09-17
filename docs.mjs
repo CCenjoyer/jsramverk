@@ -110,6 +110,45 @@ const docs = {
             await client.close();
         }
     },
+
+    /**
+     * Deletes document on route delete call to -> api/docs/:id
+     * @param {string} id 
+     */
+    deleteOne: async function deleteOne(id) {
+        try {
+            await client.connect();
+
+            const database = client.db('documents');
+            const collection = database.collection('documents');
+
+            const filter = { _id: new ObjectId(id) };
+            const result = await collection.deleteOne(filter);
+
+            // Check if the document was deleted
+            if (result.deletedCount === 1) {
+                console.log(`Successfully deleted document with id ${id}`);
+                return {
+                    success: true,
+                    message: `Document with id ${id} deleted.`
+                };
+            } else {
+                console.log(`No document found with id ${id}`);
+                return {
+                    success: false,
+                    message: `No document found with id ${id}`
+                };
+            }
+        } catch (e) {
+            console.error('Error deleting document:', e);
+            return {
+                success: false,
+                message: e.message
+            };
+        } finally {
+            await client.close();
+        }
+    }
 };
 
 export default docs;
