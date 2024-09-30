@@ -1,11 +1,20 @@
 import {
     MongoClient,
-    ObjectId
+    ObjectId,
+    ServerApiVersion
 } from 'mongodb';
 
 
-const uri = "mongodb://localhost:27017";
-const client = new MongoClient(uri);
+// const uri = "mongodb://localhost:27017";
+const uri = `mongodb+srv://josf23:${process.env.DB_PASS}@text-editor.n78oh.mongodb.net/?retryWrites=true&w=majority&appName=text-editor`;
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+        serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
+});
 
 const docs = {
     /**

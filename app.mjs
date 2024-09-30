@@ -5,8 +5,10 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import morgan from 'morgan';
 import cors from 'cors';
-import documents from "./docs.mjs";
 
+import './database.mjs';
+
+// import documents from "./docs.mjs";
 import posts from "./routes/posts.mjs"
 import api from "./routes/api.mjs"
 
@@ -15,7 +17,7 @@ import {
 } from 'inspector';
 
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 const app = express();
 
 app.use(cors());

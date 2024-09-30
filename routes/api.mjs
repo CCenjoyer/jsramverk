@@ -1,6 +1,7 @@
 import express from 'express';
-const router = express.Router();
 import documents from "../docs.mjs";
+
+const router = express.Router();
 
 // Get all documents
 router.get('/docs', async (req, res) => {
