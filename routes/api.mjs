@@ -3,6 +3,19 @@ import documents from "../docs.mjs";
 
 const router = express.Router();
 
+// Return json with routes
+router.get('/', async (req, res) => {
+    return res.json({
+            data: {
+                api_routes: [
+                    "docs",
+                    "docs/{id}"
+                ]
+            }
+    });
+});
+
+
 // Get all documents
 router.get('/docs', async (req, res) => {
     try {

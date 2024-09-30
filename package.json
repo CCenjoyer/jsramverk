@@ -1,7 +1,7 @@
 {
   "name": "ssr-editor",
   "version": "1.0.0",
-  "description": "Starter project for DV1677 JSRamverk",
+  "description": "Project for DV1677 JSRamverk",
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.mjs",
