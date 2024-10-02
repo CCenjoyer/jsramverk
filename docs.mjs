@@ -4,8 +4,11 @@ import {
     ServerApiVersion
 } from 'mongodb';
 
-
 // const uri = "mongodb://localhost:27017";
+
+
+// sets the database uri to a mongoDB atlas cloud connection.
+// --> Requires a .env file with DB_PASS set as a appropriate password.
 const uri = `mongodb+srv://josf23:${process.env.DB_PASS}@text-editor.n78oh.mongodb.net/?retryWrites=true&w=majority&appName=text-editor`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {

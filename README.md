@@ -6,12 +6,17 @@ Project for DV1677 JSRamverk
 ```
 #from root
 npm install dotenv
-bash db/reset_db.bash
+
+[!IMPORTANT]
+requires the password for mongodb atlas to be set in a .env file in order to connect to the cloud database
+#in .env
+PORT={port}                             #port = example routes: [8080, 8585, 3000] sets port for application to run on
+DB_PASS="{valid password string}"       #password for cloud database
 ```
 
 ## To start application:
 ```
-node app.mjs
+node app.mjs || npm start app.mjs       #for development purposes 
 ```
 
 
