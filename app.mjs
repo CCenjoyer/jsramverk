@@ -47,8 +47,8 @@ app.use(express.urlencoded({ extended: true }));
  * route: "api/"           - routes within routes/api.mjs
  * route: "/"              - routes within routes/posts.mjs
 */
-app.use("/api", api);
-app.use("/", posts);
+app.use("/", api);
+// app.use("/", posts);
 
 
 
