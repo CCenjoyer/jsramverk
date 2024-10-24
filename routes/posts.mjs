@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import documents from "../docs.mjs";
+import documents from "../models/docs.mjs";
 
 /**
  * Route index 

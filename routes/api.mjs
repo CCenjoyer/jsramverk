@@ -1,5 +1,5 @@
 import express from 'express';
-import documents from "../docs.mjs";
+import documents from "../models/docs.mjs";
 
 const router = express.Router();
 
@@ -7,10 +7,22 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     return res.json({
             data: {
-                api_routes: [
-                    "docs",
-                    "docs/{id}"
-                ]
+                api_routes: {
+                    get: [
+                        "/",
+                        "docs",
+                        "docs/{id}"
+                    ],
+                    post: [
+                        "docs/{id}"
+                    ],
+                    put: [
+                        "docs/{id}"
+                    ],
+                    delete: [
+                        "docs/{id}"
+                    ] 
+                }
             }
     });
 });

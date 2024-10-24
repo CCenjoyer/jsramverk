@@ -12,15 +12,21 @@ import './database.mjs';
 import posts from "./routes/posts.mjs"
 import api from "./routes/api.mjs"
 
-import {
-    console
-} from 'inspector';
+// login and authentication routes
+import auth from "./routes/auth.js";
+import users from "./routes/users.js";
+import data from "./routes/data.js";
 
+import { console } from 'inspector';
 
-const port = process.env.PORT;
+import authModel from "./models/auth.js";
+
+const port = process.env.PORT || 8080;
 const app = express();
 
 app.use(cors());
+app.options('*', cors());
+
 app.disable('x-powered-by');
 app.set("view engine", "ejs");
 app.use(express.static(path.join(process.cwd(), "public")));
@@ -38,6 +44,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// app.all('*', authModel.checkAPIKey);
 
 
 /** 
@@ -48,13 +55,16 @@ app.use(express.urlencoded({ extended: true }));
  * route: "/"              - routes within routes/posts.mjs
 */
 app.use("/", api);
-// app.use("/", posts);
+// app.use("/posts", posts);
 
+app.use("/users", users);
+app.use("/data", data);
+app.use("/auth", auth);
 
 
 /**
  * Reminder of what port the app is listening on
  */
 app.listen(port, () => {
-    console.log(`React app listening on port ${port}`)
+    console.log(`Express app listening on port ${port}`)
 });
