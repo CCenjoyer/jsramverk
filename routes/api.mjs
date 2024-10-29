@@ -1,40 +1,41 @@
 import express from 'express';
 import documents from "../models/docs.mjs";
+import auth from '../models/auth.js';
 
 const router = express.Router();
 
 // Return json with routes
 router.get('/', async (req, res) => {
     return res.json({
-            data: {
-                api_routes: {
-                    get: [
-                        "/",
-                        "docs",
-                        "docs/{id}"
-                    ],
-                    post: [
-                        "docs/{id}"
-                    ],
-                    put: [
-                        "docs/{id}"
-                    ],
-                    delete: [
-                        "docs/{id}"
-                    ] 
-                }
+        data: {
+            api_routes: {
+                get: [
+                    "/",
+                    "docs",
+                    "docs/{id}"
+                ],
+                post: [
+                    "docs/{id}"
+                ],
+                put: [
+                    "docs/{id}"
+                ],
+                delete: [
+                    "docs/{id}"
+                ] 
             }
+        }
     });
 });
 
-
 // Get all documents
-router.get('/docs', async (req, res) => {
+router.get('/docs', auth.checkToken, async (req, res) => {
     try {
         const docs = await documents.getAll();
         return res.json({
             success: true,
-            data: docs });
+            data: docs
+        });
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -44,7 +45,7 @@ router.get('/docs', async (req, res) => {
 });
 
 // Get one document by ID
-router.get('/docs/:id', async (req, res) => {
+router.get('/docs/:id', auth.checkToken, async (req, res) => {
     try {
         const doc = await documents.getOne(req.params.id);
         if (!doc) {
@@ -66,7 +67,7 @@ router.get('/docs/:id', async (req, res) => {
 });
 
 // Create a new document
-router.post('/docs', async (req, res) => {
+router.post('/docs', auth.checkToken, async (req, res) => {
     try {
         const result = await documents.addOne(req.body);
         return res.status(201).json({
@@ -82,7 +83,7 @@ router.post('/docs', async (req, res) => {
 });
 
 // Update an existing document by ID
-router.put('/docs/:id', async (req, res) => {
+router.put('/docs/:id', auth.checkToken, async (req, res) => {
     try {
         const id = req.params.id;
         const updatedDoc = await documents.rowUpdate(req.body, id);
@@ -105,7 +106,7 @@ router.put('/docs/:id', async (req, res) => {
 });
 
 // Delete a document by ID
-router.delete('/docs/:id', async (req, res) => {
+router.delete('/docs/:id', auth.checkToken, async (req, res) => {
     try {
         const result = await documents.deleteOne(req.params.id);
         if (!result) {
