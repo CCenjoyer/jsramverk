@@ -122,7 +122,29 @@ const docs = {
             await client.close();
         }
     },
+    /**
+     * Get several documents by a list of IDs
+     * @param {Array<string>} ids 
+     */
+    getByIds: async function getByIds(ids) {
+        try {
+            await client.connect();
+            const database = client.db('documents');
+            const collection = database.collection('documents');
 
+            const objectIds = ids.map(id => new ObjectId(id));
+            const filter = {
+                _id: { $in: objectIds }
+            };
+
+            // Find the documents
+            return await collection.find(filter).toArray();
+        } catch (e) {
+            console.error('Error getting documents by IDs:', e);
+        } finally {
+            await client.close();
+        }
+    },
     /**
      * Deletes document on route delete call to -> api/docs/:id
      * @param {string} id 

@@ -31,7 +31,14 @@ router.get('/', async (req, res) => {
 // Get all documents
 router.get('/docs', auth.checkToken, async (req, res) => {
     try {
-        const docs = await documents.getAll();
+        const docIds = req.query.ids ? req.query.ids.split(',') : null;
+        let docs;
+
+        if (docIds) {
+            docs = await documents.getByIds(docIds);
+        } else {
+            docs = await documents.getAll();
+        }
         return res.json({
             success: true,
             data: docs
