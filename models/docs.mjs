@@ -1,23 +1,5 @@
-import {
-    MongoClient,
-    ObjectId,
-    ServerApiVersion
-} from 'mongodb';
-
-// const uri = "mongodb://localhost:27017";
-
-
-// sets the database uri to a mongoDB atlas cloud connection.
-// --> Requires a .env file with DB_PASS set as a appropriate password.
-const uri = `mongodb+srv://josf23:${process.env.DB_PASS}@text-editor.n78oh.mongodb.net/?retryWrites=true&w=majority&appName=text-editor`;
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-        serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    }
-});
+import { ObjectId } from 'mongodb';
+import database from '../db/database.js';
 
 const docs = {
     /**
@@ -25,162 +7,132 @@ const docs = {
      * Route /
      */
     getAll: async function getAll() {
-        try {
-            // Connect to the MongoDB cluster
-            await client.connect();
+        let db;
 
-            // Choose the database and collection
-            const database = client.db('documents');
-            const collection = database.collection('documents');
+        try {
+            // Get the database and collection
+            db = await database.getDb('documents');
 
             // Find all documents in the collection
-            return await collection.find({}).toArray();
-
+            return await db.collection.find({}).toArray();
         } catch (e) {
             console.error(e);
         } finally {
             // Ensure that the client will close when you finish
-            await client.close();
+            await db.client.close();
         }
     },
 
     /**
-     * Returns one data row if id exists else reutrn {}
-     * @param {int} id 
+     * Returns one data row if id exists else return {}
+     * @param {string} id 
      */
     getOne: async function getOne(id) {
-        try {
-            await client.connect();
+        let db;
 
-            const database = client.db('documents');
-            const collection = database.collection('documents');
+        try {
+            // Validate id format
+            if (!ObjectId.isValid(id)) {
+                throw new Error(`Invalid ID format: ${id}`);
+            }
+
+            // Get the database and collection
+            db = await database.getDb('documents');
 
             const query = {
                 _id: new ObjectId(id)
             };
 
-            return await collection.findOne(query);
-
+            return await db.collection.findOne(query);
         } catch (e) {
             console.error(e);
         } finally {
             // Ensure that the client will close when you finish
-            await client.close();
+            await db.client.close();
         }
     },
 
     /**
-     * Create a new data row with data
-     * @param {title: text, content: textarea} body 
+     * Create a new document
+     * @param {object} doc 
      */
-    addOne: async function addOne(body) {
-        try {
-            await client.connect();
-            const database = client.db('documents');
-            const collection = database.collection('documents');
+    addOne: async function addOne(doc) {
+        let db;
 
-            const newDoc = {
-                title: body.title,
-                content: body.content,
-            };
+        try {
+            // Get the database and collection
+            db = await database.getDb('documents');
 
             // Insert the document
-            return await collection.insertOne(newDoc);
+            return await db.collection.insertOne(doc);
         } catch (e) {
             console.error(e);
         } finally {
-            await client.close();
+            // Ensure that the client will close when you finish
+            await db.client.close();
         }
     },
+
     /**
-     * Updates row data on route /Update?id=x
-     * @param {title: text, content: textarea} body 
-     * @param {int} id 
+     * Update an existing document by ID
+     * @param {string} id 
+     * @param {object} doc 
      */
-    rowUpdate: async function rowUpdate(body, id) {
+    updateOne: async function updateOne(id, doc) {
+        let db;
+
         try {
-            await client.connect();
-            const database = client.db('documents');
-            const collection = database.collection('documents');
+            // Validate id format
+            if (!ObjectId.isValid(id)) {
+                throw new Error(`Invalid ID format: ${id}`);
+            }
+
+            // Get the database and collection
+            db = await database.getDb('documents');
 
             const filter = {
                 _id: new ObjectId(id)
             };
 
             const updateDoc = {
-                $set: {
-                    title: body.title,
-                    content: body.content,
-                }
+                $set: doc
             };
 
-            // Update the document
-            return await collection.updateOne(filter, updateDoc);
+            return await db.collection.updateOne(filter, updateDoc);
         } catch (e) {
-            console.error('Error updating document:', e);
+            console.error(e);
         } finally {
-            await client.close();
+            // Ensure that the client will close when you finish
+            await db.client.close();
         }
     },
-    /**
-     * Get several documents by a list of IDs
-     * @param {Array<string>} ids 
-     */
-    getByIds: async function getByIds(ids) {
-        try {
-            await client.connect();
-            const database = client.db('documents');
-            const collection = database.collection('documents');
 
-            const objectIds = ids.map(id => new ObjectId(id));
-            const filter = {
-                _id: { $in: objectIds }
-            };
-
-            // Find the documents
-            return await collection.find(filter).toArray();
-        } catch (e) {
-            console.error('Error getting documents by IDs:', e);
-        } finally {
-            await client.close();
-        }
-    },
     /**
-     * Deletes document on route delete call to -> api/docs/:id
+     * Delete a document by ID
      * @param {string} id 
      */
     deleteOne: async function deleteOne(id) {
+        let db;
+
         try {
-            await client.connect();
-
-            const database = client.db('documents');
-            const collection = database.collection('documents');
-
-            const filter = { _id: new ObjectId(id) };
-            const result = await collection.deleteOne(filter);
-
-            // Check if the document was deleted
-            if (result.deletedCount === 1) {
-                console.log(`Successfully deleted document with id ${id}`);
-                return {
-                    success: true,
-                    message: `Document with id ${id} deleted.`
-                };
-            } else {
-                console.log(`No document found with id ${id}`);
-                return {
-                    success: false,
-                    message: `No document found with id ${id}`
-                };
+            // Validate id format
+            if (!ObjectId.isValid(id)) {
+                throw new Error(`Invalid ID format: ${id}`);
             }
-        } catch (e) {
-            console.error('Error deleting document:', e);
-            return {
-                success: false,
-                message: e.message
+
+            // Get the database and collection
+            db = await database.getDb('documents');
+
+            const filter = {
+                _id: new ObjectId(id)
             };
+
+            return await db.collection.deleteOne(filter);
+        } catch (e) {
+            console.error(e);
         } finally {
-            await client.close();
+            // Ensure that the client will close when you finish
+            await db.client.close();
         }
     }
 };

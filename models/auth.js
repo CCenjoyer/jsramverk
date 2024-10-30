@@ -9,7 +9,7 @@ const auth = {
         const email = body.email;
 
         try {
-            const db = await database.getDb();
+            const db = await database.getDb('users');
 
             // Check if the user exists by email
             const user = await db.collection.findOne({ email: email });
@@ -88,7 +88,7 @@ const auth = {
         let db;
 
         try {
-            db = await database.getDb();
+            db = await database.getDb('users');
             const user = await db.collection.findOne({ email: email });
 
             if (user) {
@@ -173,7 +173,7 @@ const auth = {
         let db;
 
         try {
-            db = await database.getDb();
+            db = await database.getDb('users');
 
             // Check if email already exists
             const existingUser = await db.collection.findOne({ email: email });
