@@ -1,40 +1,37 @@
-import 'dotenv/config'
+import "dotenv/config";
 
-import express from 'express';
-import bodyParser from 'body-parser';
-import path from 'path';
-import morgan from 'morgan';
-import cors from 'cors';
+import bodyParser from "body-parser";
+import cors from "cors";
+import express from "express";
+import morgan from "morgan";
+import path from "path";
+import { Server } from "socket.io";
+import setupSocket from "./setup-socket.mjs";
 
-import './database.mjs';
+import "./database.mjs";
 
-// import documents from "./docs.mjs";
-import posts from "./routes/posts.mjs"
-import api from "./routes/api.mjs"
+import api from "./routes/api.mjs";
+import docs from "./routes/docs.mjs";
 
 // login and authentication routes
+import { console } from "inspector";
 import auth from "./routes/auth.js";
 import users from "./routes/users.js";
-import data from "./routes/data.js";
-
-import { console } from 'inspector';
-
-import authModel from "./models/auth.js";
 
 const port = process.env.PORT || 8080;
 const app = express();
 
 app.use(cors());
-app.options('*', cors());
+app.options("*", cors());
 
-app.disable('x-powered-by');
+app.disable("x-powered-by");
 app.set("view engine", "ejs");
 app.use(express.static(path.join(process.cwd(), "public")));
 
 // don't show the log when it is test
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
     // use morgan to log at command line
-    app.use(morgan('combined')); // 'combined' outputs the Apache style LOGs
+    app.use(morgan("combined")); // 'combined' outputs the Apache style LOGs
 }
 
 app.use(bodyParser.json());
@@ -46,25 +43,23 @@ app.use(express.urlencoded({ extended: true }));
 
 // app.all('*', authModel.checkAPIKey);
 
-
-/** 
+/**
  * Routes:
  * adds routes present in routes folder (".routes/*") accessible through:
  * example use:
  * route: "api/"           - routes within routes/api.mjs
  * route: "/"              - routes within routes/posts.mjs
-*/
+ */
 app.use("/", api);
 // app.use("/posts", posts);
 
 app.use("/users", users);
-app.use("/data", data);
 app.use("/auth", auth);
+app.use("/docs", docs);
 
+const httpServer = setupSocket(app);
 
-/**
- * Reminder of what port the app is listening on
- */
-app.listen(port, () => {
-    console.log(`Express app listening on port ${port}`)
+// Start the server
+httpServer.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
 });

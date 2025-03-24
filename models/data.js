@@ -1,5 +1,5 @@
 const database = require("../db/database.js");
-const ObjectId = require('mongodb').ObjectId;
+const ObjectId = require("mongodb").ObjectId;
 
 const data = {
     getAllDataForUser: async function (res, req) {
@@ -13,10 +13,10 @@ const data = {
             };
 
             const cursor = db.collection.aggregate([
-                { "$match": filter },
-                { "$unwind": "$users" },
-                { "$match": { "users.email": req.user.email } },
-                { "$replaceRoot": { "newRoot": "$users" } }
+                { $match: filter },
+                { $unwind: "$users" },
+                { $match: { "users.email": req.user.email } },
+                { $replaceRoot: { newRoot: "$users" } },
             ]);
 
             const userData = await cursor.toArray();
@@ -28,8 +28,8 @@ const data = {
                     status: 500,
                     path: "/data",
                     title: "Database error",
-                    message: e.message
-                }
+                    message: e.message,
+                },
             });
         } finally {
             if (db && db.client) await db.client.close();
@@ -49,11 +49,15 @@ const data = {
                     "users.$.data": {
                         artefact: req.body.artefact,
                         _id: new ObjectId(),
-                    }
-                }
+                    },
+                },
             };
 
-            const result = await db.collection.findOneAndUpdate(filter, updateDoc, { returnDocument: "after" });
+            const result = await db.collection.findOneAndUpdate(
+                filter,
+                updateDoc,
+                { returnDocument: "after" }
+            );
 
             if (result.value) {
                 return res.status(201).json({ data: result.value });
@@ -63,8 +67,8 @@ const data = {
                         status: 404,
                         path: "/data",
                         title: "User not found",
-                        message: "User with provided email does not exist."
-                    }
+                        message: "User with provided email does not exist.",
+                    },
                 });
             }
         } catch (e) {
@@ -73,8 +77,8 @@ const data = {
                     status: 500,
                     path: "POST /data INSERT",
                     title: "Database error",
-                    message: e.message
-                }
+                    message: e.message,
+                },
             });
         } finally {
             if (db && db.client) await db.client.close();
@@ -90,8 +94,8 @@ const data = {
                     status: 400,
                     path: "PUT /data no id",
                     title: "No id provided",
-                    message: "No data id provided"
-                }
+                    message: "No data id provided",
+                },
             });
         }
 
@@ -109,23 +113,25 @@ const data = {
                         status: 404,
                         path: "PUT /data",
                         title: "Data not found",
-                        message: "Data with provided id does not exist."
-                    }
+                        message: "Data with provided id does not exist.",
+                    },
                 });
             }
 
             const updateFilter = { _id: originalObject["_id"] };
             const updateDoc = {
                 $set: {
-                    "users.$[user].data.$[data].artefact": artefact
-                }
+                    "users.$[user].data.$[data].artefact": artefact,
+                },
             };
             const arrayFilters = [
                 { "user.email": req.user.email },
-                { "data._id": ObjectId(id) }
+                { "data._id": ObjectId(id) },
             ];
 
-            await db.collection.updateOne(updateFilter, updateDoc, { arrayFilters });
+            await db.collection.updateOne(updateFilter, updateDoc, {
+                arrayFilters,
+            });
 
             return res.status(204).send();
         } catch (e) {
@@ -134,8 +140,8 @@ const data = {
                     status: 500,
                     path: "PUT /data UPDATE",
                     title: "Database error",
-                    message: e.message
-                }
+                    message: e.message,
+                },
             });
         } finally {
             if (db && db.client) await db.client.close();
@@ -151,8 +157,8 @@ const data = {
                     status: 400,
                     path: "DELETE /data no id",
                     title: "No id provided",
-                    message: "No data id provided"
-                }
+                    message: "No data id provided",
+                },
             });
         }
 
@@ -163,15 +169,15 @@ const data = {
 
             const filter = {
                 "users.email": req.user.email,
-                "users.data._id": ObjectId(id)
+                "users.data._id": ObjectId(id),
             };
 
             const deleteDoc = {
                 $pull: {
                     "users.$.data": {
-                        "_id": ObjectId(id)
-                    }
-                }
+                        _id: ObjectId(id),
+                    },
+                },
             };
 
             const result = await db.collection.updateOne(filter, deleteDoc);
@@ -182,8 +188,8 @@ const data = {
                         status: 404,
                         path: "DELETE /data",
                         title: "Data not found",
-                        message: "Data with provided id does not exist."
-                    }
+                        message: "Data with provided id does not exist.",
+                    },
                 });
             }
 
@@ -194,13 +200,13 @@ const data = {
                     status: 500,
                     path: "DELETE /data DELETE",
                     title: "Database error",
-                    message: e.message
-                }
+                    message: e.message,
+                },
             });
         } finally {
             if (db && db.client) await db.client.close();
         }
-    }
+    },
 };
 
 module.exports = data;
