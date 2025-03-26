@@ -20,6 +20,12 @@ const setupSocket = (app) => {
             socket.join(room);
         });
 
+        // Handle document updates
+        socket.on("updateDocument", ({ room, title, content }) => {
+            // Broadcast the update to other clients in the room
+            socket.to(room).emit("documentUpdated", { title, content });
+        });
+
         // Handle disconnection
         socket.on("disconnect", () => {
             console.log(`Socket disconnected: ${socket.id}`);
