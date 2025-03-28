@@ -251,6 +251,83 @@ const docs = {
             await db.client.close();
         }
     },
+
+    addComment: async function addComment(id, quote, comment) {
+        let db;
+        try {
+            // Validate id format
+            if (!ObjectId.isValid(id)) {
+                throw new Error(`Invalid ID format: ${id}`);
+            }
+
+            // Get the database and collection
+            db = await database.getDb("documents");
+
+            const filter = {
+                _id: new ObjectId(id),
+            };
+
+            // Generate a unique ID for the new comment
+            const commentId = new ObjectId();
+
+            const updateDoc = {
+                $push: {
+                    comments: {
+                        _id: commentId, // Add the generated ID to the comment
+                        quote: quote,
+                        comment: comment,
+                    },
+                },
+            };
+
+            const result = await db.collection.updateOne(filter, updateDoc);
+
+            // Check if the update was successful
+            if (result.modifiedCount > 0) {
+                return commentId.toString(); // Return the ID of the new comment
+            } else {
+                throw new Error("Failed to add comment");
+            }
+        } catch (e) {
+            console.error(e);
+            throw e; // Re-throw the error for the caller to handle
+        } finally {
+            // Ensure that the client will close when you finish
+            await db.client.close();
+        }
+    },
+
+    deleteComment: async function deleteComment(id, commentId) {
+        let db;
+        try {
+            // Validate id format
+            if (!ObjectId.isValid(id)) {
+                throw new Error(`Invalid ID format: ${id}`);
+            }
+
+            // Get the database and collection
+            db = await database.getDb("documents");
+
+            const filter = {
+                _id: new ObjectId(id),
+            };
+
+            const updateDoc = {
+                $pull: {
+                    comments: {
+                        _id: new ObjectId(commentId),
+                    },
+                },
+            };
+
+            return await db.collection.updateOne(filter, updateDoc);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            // Ensure that the client will close when you finish
+            await db.client.close();
+        }
+    },
 };
 
 export default docs;
